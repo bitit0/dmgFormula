@@ -23,6 +23,14 @@ class Character:
 
     talent = 0
 
+    defReduction = 0
+    resistReduction = .4
+
+class Enemy:
+
+    lvl = 100
+    baseResist = .1
+
 
 
 def main():
@@ -44,61 +52,63 @@ def main():
     childe.CR = 1
     childe.CD = 1.4
 
-    EM = 200
+    childe.EM = 200
     childe.ReactionBonus = 0
 
     childe.talent = 6.0544 # Lvl 8 ranged burst
 
     ### Enemy
-    lvlEnemy = 100
-    defReduction = 0
-
-    baseResist = .1
-    resistReduction = .4
 
     # Formula calcs
 
+    e = Enemy
+
+    calc(childe, e)
+
+
+
+def calc(c=Character(), e=Enemy()):
+
     # general
-    otherBonus = 1      # evilsoother
+    otherBonus = 1  # evilsoother
 
     # ampReaction
-    ampReaction = 2 * (1 + (2.78 * EM)/(1400 +EM) + childe.ReactionBonus)
+    ampReaction = 2 * (1 + (2.78 * c.EM) / (1400 + c.EM) + c.ReactionBonus)
 
     # enemyResMult
-    resistance = baseResist - resistReduction
+    resistance = e.baseResist - c.resistReduction
 
     enemyResMult = 0
     if resistance < 0:
-        enemyResMult = 1 - (resistance/2)
+        enemyResMult = 1 - (resistance / 2)
     elif resistance < 0.75:
         enemyResMult = 1 - resistance
     else:
         enemyResMult = 1 / (4 * resistance + 1)
 
     # enemyDefMult
-    enemyDefMult = (childe.LvlChar + 100)/((childe.LvlChar + 100) + (lvlEnemy + 100) * (1 - defReduction))
+    enemyDefMult = (c.LvlChar + 100) / ((c.LvlChar + 100) + (e.lvl + 100) * (1 - c.defReduction))
 
     # Crit Formula
     r = random.uniform(0, 1)
     crit = 1
-    if (r < childe.CR):
-        crit = 1 + childe.CD
+    if (r < c.CR):
+        crit = 1 + c.CD
 
     # attack
-    attack = (childe.AtkChar + childe.AtkWeapon) * (1 + childe.AtkBonus) + childe.FlatAtk
+    attack = (c.AtkChar + c.AtkWeapon) * (1 + c.AtkBonus) + c.FlatAtk
 
     # baseDamage
-    baseDamage = childe.talent * attack + childe.FlatDmg
+    baseDamage = c.talent * attack + c.FlatDmg
 
-    damage = baseDamage * (1 + childe.DmgBonus) * crit * enemyDefMult * enemyResMult * ampReaction * otherBonus # no transformative
+    damage = baseDamage * (
+                1 + c.DmgBonus) * crit * enemyDefMult * enemyResMult * ampReaction * otherBonus  # no transformative
 
     print(f"{baseDamage=}\n{enemyDefMult=}\n{enemyResMult=}\n{ampReaction=}")
 
     print(f"\n{attack=}")
 
-    print("Damage Done (within 1%):", damage)
-
-
+    print("Damage (within .01%):", damage)
 
 
 
