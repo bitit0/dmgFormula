@@ -31,12 +31,10 @@ class Enemy:
     lvl = 100
     baseResist = .1
 
-
-
 def main():
 
     ### Character
-    childe = Character
+    childe = Character()
 
     childe.LvlChar = 90
     childe.AtkChar = 301
@@ -49,7 +47,7 @@ def main():
     childe.FlatDmg = 0
     childe.DmgBonus = .754
 
-    childe.CR = 1
+    childe.CR = 0.7
     childe.CD = 1.4
 
     childe.EM = 200
@@ -61,10 +59,18 @@ def main():
 
     # Formula calcs
 
-    e = Enemy
+    e = Enemy()
 
-    calc(childe, e)
+    #calc(childe, e)
 
+    runCount = 100000
+    dmgArr = []
+    for i in range(runCount):
+        d = calc(childe,e)
+        dmgArr.append(d)
+        print(d)
+
+    print(f"\nAverage DMG over {runCount} runs: {sum(dmgArr)/runCount}")
 
 
 def calc(c=Character(), e=Enemy()):
@@ -104,11 +110,12 @@ def calc(c=Character(), e=Enemy()):
     damage = baseDamage * (
                 1 + c.DmgBonus) * crit * enemyDefMult * enemyResMult * ampReaction * otherBonus  # no transformative
 
-    print(f"{baseDamage=}\n{enemyDefMult=}\n{enemyResMult=}\n{ampReaction=}")
+    #print(f"{baseDamage=}\n{enemyDefMult=}\n{enemyResMult=}\n{ampReaction=}")
 
-    print(f"\n{attack=}")
+    #print(f"\n{attack=}")
 
-    print("Damage (within .01%):", damage)
+    return damage
+
 
 
 
