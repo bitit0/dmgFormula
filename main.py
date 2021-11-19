@@ -26,6 +26,8 @@ class Character:
     defReduction = 0
     resistReduction = .4
 
+    otherBonus = 1  # evilsoother
+
 class Enemy:
 
     lvl = 100
@@ -76,7 +78,7 @@ def main():
 def calc(c=Character(), e=Enemy()):
 
     # general
-    otherBonus = 1  # evilsoother
+
 
     # ampReaction
     ampReaction = 2 * (1 + (2.78 * c.EM) / (1400 + c.EM) + c.ReactionBonus)
@@ -108,7 +110,7 @@ def calc(c=Character(), e=Enemy()):
     baseDamage = c.talent * attack + c.FlatDmg
 
     damage = baseDamage * (
-                1 + c.DmgBonus) * crit * enemyDefMult * enemyResMult * ampReaction * otherBonus  # no transformative
+                1 + c.DmgBonus) * crit * enemyDefMult * enemyResMult * ampReaction * c.otherBonus  # no transformative
 
     #print(f"{baseDamage=}\n{enemyDefMult=}\n{enemyResMult=}\n{ampReaction=}")
 
