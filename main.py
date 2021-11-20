@@ -1,10 +1,8 @@
 import math
 import random
 
-class Artifact:
 
-    #mainStat = list()
-    #subStat = list()
+class Artifact:
 
     def __init__(self, a, b, c, d, e):
         self.mainStat = []
@@ -15,6 +13,7 @@ class Artifact:
         self.subStat.append(c)
         self.subStat.append(d)
         self.subStat.append(e)
+
 
 class Character:
 
@@ -36,9 +35,8 @@ class Character:
     otherBonus = 1          # 1.5 if Evilsoother is active
     ER = 0                  # ER
 
-    def __init__(self, artifacts: list[Artifact], weaponAtk: int):
+    def __init__(self, artifacts: list[Artifact]):
 
-        self.AtkWeapon = weaponAtk
         elementalGoblets = ["Electro%", "Pyro%", "Physical%", "Hydro%", "Cryo%", "Geo%"]
 
         for item in artifacts:          # only damage stats currently
@@ -69,11 +67,11 @@ class Character:
                     self.ER += subs[1]
 
 
-
 class Enemy:
 
     lvl = 100
     baseResist = .1
+
 
 def main():
 
@@ -123,7 +121,7 @@ def main():
 
     artifactList = [flower, feather, sands, goblet, circlet]
 
-    test = Character(artifactList, 674)
+    test = Character(artifactList)
     test.FlatAtk = 337
     test.FlatAtk += 1600 # bennett and sara
     test.DmgBonus += .32 + .3 + .2272*.25 # kazuha + raiden E + emblem
@@ -185,8 +183,6 @@ def calc(c: Character, e: Enemy, talent: float):
                 1 + c.DmgBonus) * crit * enemyDefMult * enemyResMult * ampReaction * c.otherBonus  # no transformative
 
     return damage
-
-
 
 
 if __name__ == "__main__":
