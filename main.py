@@ -35,6 +35,8 @@ class Character:
     otherBonus = 1          # 1.5 if Evilsoother is active
     ER = 0                  # ER
 
+    talent = 0              # talent value
+
     def __init__(self, artifacts: list[Artifact]):
 
         elementalGoblets = ["Electro%", "Pyro%", "Physical%", "Hydro%", "Cryo%", "Geo%"]
@@ -69,7 +71,7 @@ class Character:
 
 class Enemy:
 
-    lvl = 100
+    lvl = 93
     baseResist = .1
 
 
@@ -113,45 +115,54 @@ def main():
     # raiden.otherBonus = 0
 
     # Artifacts
-    flower = Artifact(["HP", 4780], ["ATK", 53], ["CR%", .086], ["CD%", .132], ["ER%", .065])
-    feather = Artifact(["ATK", 311], ["ATK%", .053], ["CR%", .148], ["CD%", .132], ["ER%", .104])
-    sands = Artifact(["ER%", .518], ["ATK%", .087], ["CR%", .066], ["CD%", .155], ["HP%", .105])
-    goblet = Artifact(["Electro%", .466], ["DEF", 42], ["CR%", .089], ["CD%", .148], ["ER%", .058])
-    circlet = Artifact(["CD%", .622], ["ATK%", .175], ["CR%", .105], ["ER%", .052], ["DEF", 23])
+    # flower = Artifact(["HP", 4780], ["ATK", 53], ["CR%", .086], ["CD%", .132], ["ER%", .065])
+    # feather = Artifact(["ATK", 311], ["ATK%", .053], ["CR%", .148], ["CD%", .132], ["ER%", .104])
+    # sands = Artifact(["ER%", .518], ["ATK%", .087], ["CR%", .066], ["CD%", .155], ["HP%", .105])
+    # goblet = Artifact(["Electro%", .466], ["DEF", 42], ["CR%", .089], ["CD%", .148], ["ER%", .058])
+    # circlet = Artifact(["CD%", .622], ["ATK%", .175], ["CR%", .105], ["ER%", .052], ["DEF", 23])
+
+    flower = Artifact(["HP", 4780], ["ATK", 18], ["ATK%", .093], ["CD%", .218], ["EM", 54])
+    feather = Artifact(["ATK", 311], ["DEF", 16], ["CR%", .105], ["CD%", .148], ["HP", 837])
+    sands = Artifact(["ATK%", .466], ["DEF", 39], ["CR%", .101], ["CD%", .210], ["DEF%", .058])
+    goblet = Artifact(["Cryo%", .466], ["HP", 269], ["CR%", .074], ["CD%", .117], ["ER%", .155])
+    circlet = Artifact(["CD%", .622], ["ATK%", .140], ["CR%", .035], ["ER%", .058], ["HP%", .181])
 
     artifactList = [flower, feather, sands, goblet, circlet]
 
     test = Character(artifactList)
-    test.FlatAtk = 337
-    test.FlatAtk += 1600 # bennett and sara
-    test.DmgBonus += .32 + .3 + .2272*.25 # kazuha + raiden E + emblem
-    test.resistReduction = .4
-    test.defReduction = .4
+    test.AtkChar = 335
+    test.FlatAtk += 0 # bennett and sara
+    test.DmgBonus += .15
+    test.resistReduction = .15
+    test.defReduction = 0
     test.LvlChar = 90
-    test.CD += .6   # Sara c6 Buff
-    test.CR += .221
-    test.AtkWeapon = 674        # jade spear
-    test.AtkBonus += .2
+    test.CD += .384   # Sara c6 Buff
+    test.CR += 0
+    test.AtkWeapon = 23        # jade spear
+    test.AtkBonus += 0
+    test.talent = 3.92
+    #test.FlatDmg = 2673.44
 
     e = Enemy()
-    talent = 7.2144+(60*7*.01)
+    #talent = 7.2144+(60*7*.01)
 
-    runCount = 100
+    runCount = 10000
     dmgArr = []
     for i in range(runCount):
-        d = calc(test,e,talent)
+        d = calc(test,e, 1)
         dmgArr.append(d)
-        print(d)
+        #print(d)
 
     print(f"\nAverage DMG over {runCount} runs: {sum(dmgArr)/runCount}")
 
 
-def calc(c: Character, e: Enemy, talent: float):
+def calc(c: Character, e: Enemy, forceCrit: int):
 
     # general
 
     # ampReaction
     ampReaction = 2 * (1 + (2.78 * c.EM) / (1400 + c.EM) + c.ReactionBonus)
+    ampReaction = 1
 
     # enemyResMult
     resistance = e.baseResist - c.resistReduction
@@ -168,19 +179,25 @@ def calc(c: Character, e: Enemy, talent: float):
     enemyDefMult = (c.LvlChar + 100) / ((c.LvlChar + 100) + (e.lvl + 100) * (1 - c.defReduction))
 
     # Crit Formula
-    r = random.uniform(0, 1)
-    crit = 1
-    if (r < c.CR):
+
+    if forceCrit == 0:
+        r = random.uniform(0, 1)
+        crit = 1
+        if (r < c.CR):
+            crit = 1 + c.CD
+    else:
         crit = 1 + c.CD
 
     # attack
     attack = (c.AtkChar + c.AtkWeapon) * (1 + c.AtkBonus) + c.FlatAtk
 
     # baseDamage
-    baseDamage = talent * attack + c.FlatDmg
+    baseDamage = c.talent * attack + c.FlatDmg
 
     damage = baseDamage * (
                 1 + c.DmgBonus) * crit * enemyDefMult * enemyResMult * ampReaction * c.otherBonus  # no transformative
+
+    print(ampReaction)
 
     return damage
 
