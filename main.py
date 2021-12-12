@@ -83,13 +83,26 @@ def main():
     e = Enemy()
     #talent = 7.2144+(60*7*.01)
 
-    # N1 E N2 E N3 E N4
-    combo = [153.32, 151.04, 149.79, 156.16, 168.9, 206.08, 229.03]
-    for i in range(len(combo)): combo[i] = combo[i]/100.0
 
-    print("Non crit: ", calc(test, e, 0))
-    print("On crit: ", calc(test, e, 1))
-    print("Average: ", (calc(test, e, 0) + calc(test, e, 1))/2.0)
+    # Combo mode forces average DMG
+    comboMode = True
+    if comboMode:
+
+        # N1 E N2 E N3 E N4
+        combo = [153.32, 151.04, 149.79, 156.16, 168.9, 206.08, 229.03]
+        for i in range(len(combo)): combo[i] = combo[i] / 100.0
+
+        total = 0
+        for talentMultiplier in combo:
+            test.talent = talentMultiplier
+            total += (calc(test, e, 0) + calc(test, e, 1))/2.0
+
+        print(f"Total average damage over combo: {total}")
+
+    else:
+        print("Non crit: ", calc(test, e, 0))
+        print("On crit: ", calc(test, e, 1))
+        print("Average: ", (calc(test, e, 0) + calc(test, e, 1))/2.0)
 
 
 
